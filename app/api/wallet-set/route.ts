@@ -17,7 +17,36 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { circleDeveloperSdk } from "@/lib/utils/developer-controlled-wallets-client";
+
+const CIRCLE_WALLET_SET_URL = "https://api.circle.com/v1/w3s/developer/walletSets";
+
+type CreateWalletSetResponse = {
+  data?: {
+    walletSet?: Record<string, unknown>;
+  };
+};
+
+async function createWalletSet(name: string): Promise<CreateWalletSetResponse> {
+  if (!process.env.CIRCLE_API_KEY) {
+    throw new Error("CIRCLE_API_KEY is missing");
+  }
+
+  const response = await fetch(CIRCLE_WALLET_SET_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.CIRCLE_API_KEY}`,
+    },
+    body: JSON.stringify({ name }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Circle wallet set API failed (${response.status}): ${text}`);
+  }
+
+  return (await response.json()) as CreateWalletSetResponse;
+}
 
 export async function PUT(req: NextRequest) {
   try {
@@ -30,9 +59,7 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    const response = await circleDeveloperSdk.createWalletSet({
-      name: entityName,
-    });
+    const response = await createWalletSet(entityName);
 
     if (!response.data) {
       return NextResponse.json(
