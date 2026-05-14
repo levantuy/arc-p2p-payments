@@ -30,7 +30,7 @@ DROP FUNCTION IF EXISTS handle_new_user();
 -- Modify the profiles table
 DROP TABLE profiles;
 CREATE TABLE profiles (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     auth_user_id UUID NOT NULL REFERENCES auth.users(id),
     name VARCHAR NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -78,7 +78,7 @@ INSERT INTO profiles (
         updated_at,
         is_active
     )
-SELECT uuid_generate_v4(),
+SELECT extensions.uuid_generate_v4(),
     -- Generate new UUID for profile
     id,
     -- Use existing id as auth_user_id

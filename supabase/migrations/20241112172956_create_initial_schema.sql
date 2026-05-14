@@ -77,7 +77,7 @@ GRANT EXECUTE ON FUNCTION handle_new_user() TO service_role;
 
 -- Wallets table
 CREATE TABLE wallets (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES profiles(id),
     circle_wallet_id VARCHAR NOT NULL,
     wallet_type VARCHAR NOT NULL,
@@ -101,7 +101,7 @@ CREATE POLICY "Users can insert own wallets" ON wallets
 
 -- Transactions table
 CREATE TABLE transactions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     wallet_id UUID NOT NULL REFERENCES wallets(id),
     user_id UUID NOT NULL REFERENCES profiles(id),
     circle_transaction_id VARCHAR NOT NULL,
@@ -152,9 +152,9 @@ GRANT USAGE ON SCHEMA public TO authenticated;
 GRANT USAGE ON SCHEMA public TO service_role;
 
 -- Grant usage of uuid-ossp functions
-GRANT EXECUTE ON FUNCTION uuid_generate_v4() TO anon;
-GRANT EXECUTE ON FUNCTION uuid_generate_v4() TO authenticated;
-GRANT EXECUTE ON FUNCTION uuid_generate_v4() TO service_role;
+GRANT EXECUTE ON FUNCTION extensions.uuid_generate_v4() TO anon;
+GRANT EXECUTE ON FUNCTION extensions.uuid_generate_v4() TO authenticated;
+GRANT EXECUTE ON FUNCTION extensions.uuid_generate_v4() TO service_role;
 
 -- Grant table permissions to authenticated users
 GRANT ALL ON ALL TABLES IN SCHEMA public TO authenticated;
